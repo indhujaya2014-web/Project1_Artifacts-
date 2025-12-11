@@ -3,7 +3,7 @@
 **Project Statement**
 > An interactive, end-to-end ETL and data exploration platform leveraging the Harvard Art Museums public API, allowing dynamic collection, storage, and SQL analysis of rich art artifacts via a Streamlit web application.
 
-***Project Approach***
+📌 ***Project Approach***
 1: Getting the Harvard Art Museums API Key
 **API Key:** Obtain a free API Key from the Harvard Art Museums:
     * Go to: [Harvard Art Museums API Request](https://www.harvardartmuseums.org/collections/api)
@@ -13,7 +13,7 @@
 3: Scroll through 25 pages and Collect a minimum of 2500 records for every classification names (for object url)
   [HarvardArtMuseum object url](https://api.harvardartmuseums.org/object)
   HINT: for the below steps use [HarvardArtMuseum object url]
-4: Collect minimum of 2500 records for atleast 5 classifications
+4: Collect minimum of 2500 records for atleast 5 classifications with respect to Artifacts (artifact_metadata, artifact_media and artifact colors)
 5: Extraction of up to 12,500 artifact records (5 classifications × 2500 records each) using the Harvard Art Museum API
 6: Transformed and filtered JSON data to retain only essential fields needed for analysis.
 7: Three SQL tables (artifact_metadata, artifact_media, artifact_colors) auto-created and populated using Python — no manual SQL writing required.
