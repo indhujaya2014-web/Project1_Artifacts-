@@ -5,14 +5,14 @@
 
 ## 📌 Project Approach
 1.  Getting the Harvard Art Museums API Key
-   **API Key:** Obtain a free API Key from the Harvard Art Museums:
-    *  Go to: [Harvard Art Museums API Request](https://www.harvardartmuseums.org/collections/api)
-    *  Follow the link to "Send a request" and submit the form. Your key will be displayed instantly.
+	  **API Key:** Obtain a free API Key from the Harvard Art Museums:
+   	 * Go to: [Harvard Art Museums API Request](https://www.harvardartmuseums.org/collections/api)
+   	 * Follow the link to "Send a request" and submit the form. Your key will be displayed instantly.
 2.  Find the classification names where the object count is >= 2500 (for classification url)
-  [HarvardArtMuseum classification url](https://api.harvardartmuseums.org/classification)
+    	[HarvardArtMuseum classification url](https://api.harvardartmuseums.org/classification)
 3.  Scroll through 25 pages and Collect a minimum of 2500 records for every classification names (for object url)
-  [HarvardArtMuseum object url](https://api.harvardartmuseums.org/object)
-  HINT: for the below steps use [HarvardArtMuseum object url]
+	    [HarvardArtMuseum object url](https://api.harvardartmuseums.org/object)
+	    HINT: for the below steps use [HarvardArtMuseum object url]
 4.  Collect minimum of 2500 records for atleast 5 classifications with respect to Artifacts (artifact_metadata, artifact_media and artifact colors)
 5.  Extraction of up to 12,500 artifact records (5 classifications × 2500 records each) using the Harvard Art Museum API
 6.  Transformed and filtered JSON data to retain only essential fields needed for analysis.
