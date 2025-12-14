@@ -5,9 +5,9 @@
 
 ## 📌 Project Approach
 1.  Getting the Harvard Art Museums API Key
-**API Key:** Obtain a free API Key from the Harvard Art Museums:
-    * Go to: [Harvard Art Museums API Request](https://www.harvardartmuseums.org/collections/api)
-    * Follow the link to "Send a request" and submit the form. Your key will be displayed instantly.
+   **API Key:** Obtain a free API Key from the Harvard Art Museums:
+    *  Go to: [Harvard Art Museums API Request](https://www.harvardartmuseums.org/collections/api)
+    *  Follow the link to "Send a request" and submit the form. Your key will be displayed instantly.
 2.  Find the classification names where the object count is >= 2500 (for classification url)
   [HarvardArtMuseum classification url](https://api.harvardartmuseums.org/classification)
 3.  Scroll through 25 pages and Collect a minimum of 2500 records for every classification names (for object url)
