@@ -45,9 +45,11 @@ def get_classifications(API_KEY,classification_name):
 
         data = response.json()
         records = data.get('records', [])
+        if not records:
+            break 
         all_records.extend(records)
 
-        return all_records
+    return all_records
     
 
 # --- FETCH ARTIFACTS BY CLASSIFICATION ---
@@ -55,47 +57,45 @@ def fetch_artifacts_by_classification(records):
     art_metadata = []
     media = []
     colors = []
-    data = {'records': records}
     # classifications = ["Coins","Paintings","Sculpture","Photographs","Drawings"]
-    for page in range(1, 26):
-        for i in data['records']:
+    for i in records:
                 # Extract metadata
-                art_metadata.append(dict(
-                    id = i['id'],
-                    title = i['title'],
-                    culture = i['culture'],
-                    period = i['period'],
-                    century = i['century'],
-                    medium = i['medium'],
-                    dimensions = i['dimensions'],
-                    description = i['description'],
-                    department = i['department'],
-                    classification = i['classification'],
-                    accessionyear = i['accessionyear'],
-                    accessionmethod = i['accessionmethod']
-                ))
+                art_metadata.append({
+                    'id': i['id'],
+                    'title': i['title'],
+                    'culture': i['culture'],
+                    'period': i['period'],
+                    'century': i['century'],
+                    'medium': i['medium'],
+                    'dimensions': i['dimensions'],
+                    'description': i['description'],
+                    'department': i['department'],
+                    'classification': i['classification'],
+                    'accessionyear': i['accessionyear'],
+                    'accessionmethod': i['accessionmethod']
+                })
                 # Extract media 
-                media.append(dict(
-                    objectid = i['objectid'],
-                    imagecount = i['imagecount'],
-                    mediacount = i['mediacount'],
-                    colorcount = i['colorcount'],
-                    rank = i['rank'],
-                    datebegin = i['datebegin'],
-                    dateend = i['dateend']
-                ))
+                media.append({
+                    'objectid': i['objectid'],
+                    'imagecount': i['imagecount'],
+                    'mediacount': i['mediacount'],
+                    'colorcount': i['colorcount'],
+                    'rank': i['rank'],
+                    'datebegin': i['datebegin'],
+                    'dateend': i['dateend']
+                })
                 # Extract colors
                 color_details = i.get('colors')
                 if color_details:
                     for j in color_details:
-                        colors.append(dict(
-                            objectid = i['objectid'],
-                            color = j['color'],
-                            spectrum = j['spectrum'],
-                                hue = j['hue'],
-                                percent = j['percent'],
-                                css3 = j['css3']
-                            ))
+                        colors.append({
+                            'objectid': i['objectid'],
+                            'color': j['color'],
+                            'spectrum': j['spectrum'],
+                            'hue': j['hue'],
+                            'percent': j['percent'],
+                            'css3': j['css3']
+                        })
 
     return art_metadata, media, colors
 
@@ -141,7 +141,6 @@ def Create_table():
         )""")
 Create_table()
 
-
 #----------------------Insert Data into Tables----------------------#
 def prepare_data_for_insertion(art_metadata, media, colors):
 
@@ -176,19 +175,6 @@ def prepare_data_for_insertion(art_metadata, media, colors):
         st.error(f"Database initialization failed: {e}")
         conn.rollback()
 
-def set_background_from_url(url):
-    page_bg_img = f'''
-    <style>
-    .stApp {{
-    background-image: url("{url}");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    }}
-    </style>
-    '''
-    st.markdown(page_bg_img, unsafe_allow_html=True)
 # ------------------ STREAMLIT APP LAYOUT ------------------#
 
 with st.sidebar:
@@ -200,8 +186,6 @@ with st.sidebar:
         selected
 
 if selected == "Home":
-        image_url = "https://news.harvard.edu/wp-content/uploads/2023/06/HAM_CourtyardArcades_PhotoCaitlinCunninghamPhotography_20220428_182_1407.jpg" 
-        set_background_from_url(image_url)
         st.markdown("<h1 style='text-align: center; color: black;'>🏛️ Harvard’s Artifacts Collection</h1>", unsafe_allow_html=True)
         st.markdown("<h2 style='text-align: center; color: green'> Welcome to Harvard Art Museums Data Application </h2>", unsafe_allow_html=True)
         st.markdown("---")
@@ -366,135 +350,139 @@ elif selected == "SQL Queries":
                 df = pd.DataFrame(results, columns=columns)
                 st.dataframe(df)
 
-            elif option == "7.	What is the average rank of all artifacts?	":
-                cursor.execute("select avg(item_rank) as average_rank from artifacts_media;")
+            elif option == "7. What is the average rank of all artifacts?":
+                cursor.execute("select avg(item_rank) as Average_rank from artifacts_media;")
                 results = cursor.fetchall()
                 columns = [i[0] for i in cursor.description]
                 df = pd.DataFrame(results, columns=columns)
                 st.dataframe(df)
 
-            elif option == "8.	Which artifacts have a higher colorcount than mediacount?	":
+            elif option == "8. Which artifacts have a higher colorcount than mediacount?":
                 cursor.execute("select * from artifacts_media where color_count > media_count;")
                 results = cursor.fetchall()
                 columns = [i[0] for i in cursor.description]
                 df = pd.DataFrame(results, columns=columns)
                 st.dataframe(df)
 
-            elif option == "9.	List all artifacts created between 1500 and 1600.	":
+            elif option == "9. List all artifacts created between 1500 and 1600.":
                 cursor.execute("select * from artifacts_media where date_begin >= 1500 and date_end <= 1600;")
                 results = cursor.fetchall()
                 columns = [i[0] for i in cursor.description]
                 df = pd.DataFrame(results, columns=columns)
                 st.dataframe(df)
 
-            elif option == "10.	How many artifacts have no media files?	":
-                cursor.execute("select count(*) as no_media_artifacts from artifacts_media where media_count = 0;")
+            elif option == "10. How many artifacts have no media files?":
+                cursor.execute("select count(*) as No_media_artifacts from artifacts_media where media_count = 0;")
                 results = cursor.fetchall()
                 columns = [i[0] for i in cursor.description]
                 df = pd.DataFrame(results, columns=columns)
                 st.dataframe(df)
 
-            elif option == "11.	What are all the distinct hues used in the dataset?	":
+            elif option == "11. What are all the distinct hues used in the dataset?":
                 cursor.execute("select distinct(hue) from artifacts_colors;")
                 results = cursor.fetchall()
                 columns = [i[0] for i in cursor.description]
                 df = pd.DataFrame(results, columns=columns)
                 st.dataframe(df)
 
-            elif option == "12.	What are the top 5 most used colors by frequency?	":
+            elif option == "12. What are the top 5 most used colors by frequency?":
                 cursor.execute("select hue, count(hue) as frequency from artifacts_colors group by hue order by frequency desc limit 5;")
                 results = cursor.fetchall()
                 columns = [i[0] for i in cursor.description]
                 df = pd.DataFrame(results, columns=columns)
                 st.dataframe(df)
 
-            elif option == "13.	What is the average coverage percentage for each hue?	":  
+            elif option == "13. What is the average coverage percentage for each hue?":  
                 cursor.execute("select hue, AVG(percent) as average_coverage_percentage from artifacts_colors group by hue order by average_coverage_percentage desc;")
                 results = cursor.fetchall()
                 columns = [i[0] for i in cursor.description]
                 df = pd.DataFrame(results, columns=columns)
                 st.dataframe(df)
 
-            elif option == "14.	List all colors used for a given artifact ID.	":
-                # artifact_id = st.text_input("Enter Artifact ID:")
-                # if st.button("Submit"):
-                #     cursor.execute("SELECT * FROM artifacts_colors WHERE object_id = %s;", (artifact_id,))
-                cursor.execute("SELECT * FROM artifacts_colors WHERE object_id = 195538;")  # Hardcoded artifact ID
-                results = cursor.fetchall()
-                columns = [i[0] for i in cursor.description]
-                df = pd.DataFrame(results, columns=columns)
-                st.dataframe(df)
-            elif option == "15.	What is the total number of color entries in the dataset?	":
+            elif option == "14. List all colors used for a given artifact ID.":
+                artifact_id = st.text_input("Enter Artifact ID:")
+                if st.button("Submit"):
+                    cursor.execute("SELECT * FROM artifacts_colors WHERE object_id = %s;", (artifact_id,))
+                # cursor.execute("SELECT * FROM artifacts_colors WHERE object_id = 195538;")  # Hardcoded artifact ID
+                    results = cursor.fetchall()
+                    columns = [i[0] for i in cursor.description]
+                    df = pd.DataFrame(results, columns=columns)
+                    st.dataframe(df)
+            elif option == "15. What is the total number of color entries in the dataset?":
                 cursor.execute("SELECT COUNT(*) AS total_color_entries FROM artifacts_colors;")
                 results = cursor.fetchall()
                 columns = [i[0] for i in cursor.description]
                 df = pd.DataFrame(results, columns=columns)
                 st.dataframe(df)
-            elif option == "16.	List artifact titles and hues for all artifacts belonging to the Byzantine culture.	":
+            elif option == "16. List artifact titles and hues for all artifacts belonging to the Byzantine culture.":
                 cursor.execute("SELECT title, hue FROM artifacts_metadata AS T1 JOIN artifacts_colors AS T3 ON T1.id = T3.object_id WHERE T1.culture = 'Byzantine';")
                 results = cursor.fetchall()
                 columns = [i[0] for i in cursor.description]
                 df = pd.DataFrame(results, columns=columns)
                 st.dataframe(df)
 
-            elif option == "17.	List each artifact title with its associated hues.":
+            elif option == "17. List each artifact title with its associated hues.":
                 cursor.execute("SELECT title, hue FROM artifacts_metadata AS T1 JOIN artifacts_colors AS T3 ON T1.id = T3.object_id;")
                 results = cursor.fetchall()
                 columns = [i[0] for i in cursor.description]
                 df = pd.DataFrame(results, columns=columns)
                 st.dataframe(df)
 
-            elif option == "18.	Get artifact titles, cultures, and media ranks where the period is not null.":
+            elif option == "18. Get artifact titles, cultures, and media ranks where the period is not null.":
                 cursor.execute("SELECT title, culture, item_rank FROM artifacts_metadata AS T1 JOIN artifacts_media AS T2 ON T1.id = T2.object_id WHERE T1.period IS NOT NULL;")
                 results = cursor.fetchall()
                 columns = [i[0] for i in cursor.description]
                 df = pd.DataFrame(results, columns=columns)
                 st.dataframe(df)
 
-            elif option == "19.	Find artifact titles ranked in the top 10 that include the color hue 'Grey'.":
-                cursor.execute("SELECT T1.title FROM artifacts_metadata AS T1 JOIN artifacts_media AS T2 ON T1.id = T2.object_id JOIN artifacts_colors AS T3 ON T1.id = T3.object_id WHERE T2.item_rank <= 10 AND T3.hue = 'Grey';")
+            elif option == "19. Find artifact titles ranked in the top 10 that include the color hue 'Grey'.":
+                cursor.execute("SELECT title, hue, item_rank FROM artifacts_metadata AS T1 JOIN artifacts_media AS T2 ON T1.id = T2.object_id JOIN artifacts_colors AS T3 ON T1.id = T3.object_id WHERE hue = 'Grey' and item_rank is not null order by T1.title asc, T2.item_rank asc limit 10;")
                 results = cursor.fetchall()
                 columns = [i[0] for i in cursor.description]
                 df = pd.DataFrame(results, columns=columns)
                 st.dataframe(df)
 
-            elif option == "20.	How many artifacts exist per classification, and what is the average media count for each?": 
+            elif option == "20. How many artifacts exist per classification, and what is the average media count for each?": 
                 cursor.execute("SELECT T1.classification, COUNT(T1.id) AS artifact_count, AVG(T2.media_count) AS average_media_count FROM artifacts_metadata AS T1 JOIN artifacts_media AS T2 ON T1.id = T2.object_id GROUP BY T1.classification;")
                 results = cursor.fetchall()
                 columns = [i[0] for i in cursor.description]
                 df = pd.DataFrame(results, columns=columns)
                 st.dataframe(df)
 
-            elif option == "21.	Find the total number of artifacts and their average display rank for each classification.":
+            elif option == "21. Find the total number of artifacts and their average display rank for each classification.":
                 cursor.execute("SELECT T1.classification, COUNT(T1.id) AS total_artifacts, AVG(T2.item_rank) AS average_display_rank FROM artifacts_metadata AS T1 JOIN artifacts_media AS T2 ON T1.id = T2.object_id GROUP BY T1.classification;")
                 results = cursor.fetchall()
                 columns = [i[0] for i in cursor.description]
                 df = pd.DataFrame(results, columns=columns)
                 st.dataframe(df)
 
-            elif option == "22.	Find the average `percent` coverage of all colors for artifacts using 'silver' as a `medium`":
-                cursor.execute("SELECT medium, AVG(percent) AS average_percent_coverage FROM artifacts_metadata AS T1 JOIN artifacts_colors AS T3 ON T1.id = T3.object_id WHERE T1.medium LIKE '%silver%';")
+            elif option == "22. Find the average `percent` coverage of all colors for artifacts using 'silver' as a `medium`":
+                cursor.execute("SELECT medium, AVG(percent) AS average_percent_coverage FROM artifacts_metadata AS T1 JOIN artifacts_colors AS T3 ON T1.id = T3.object_id WHERE T1.medium LIKE '%silver%' group by medium;")
                 results = cursor.fetchall()
                 columns = [i[0] for i in cursor.description]
                 df = pd.DataFrame(results, columns=columns)
                 st.dataframe(df)
 
-            elif option == "23.	Calculate the average `rank` only for artifacts that have more than 3 associated images":
-                cursor.execute("SELECT AVG(item_rank) AS average_rank FROM artifacts_media WHERE image_count > 3;")
+            elif option == "23. Calculate the average `rank` only for artifacts that have more than 3 associated images":
+                cursor.execute("SELECT AVG(item_rank) as average_rank FROM artifacts_media WHERE image_count > 3;")
                 results = cursor.fetchall()
                 columns = [i[0] for i in cursor.description]
                 df = pd.DataFrame(results, columns=columns)
                 st.dataframe(df)
 
-            elif option == "24.	List the titles of the 10 oldest artifacts (by `datebegin`) that have a `colorcount` greater than 5":
+            elif option == "24. List the titles of the 10 oldest artifacts (by `datebegin`) that have a `colorcount` greater than 5":
                 cursor.execute("SELECT title, date_begin, color_count FROM artifacts_metadata AS T1 JOIN artifacts_media AS T2 ON T1.id = T2.object_id WHERE T2.color_count > 5 ORDER BY T2.date_begin ASC LIMIT 10;")
                 results = cursor.fetchall()
                 columns = [i[0] for i in cursor.description]
                 df = pd.DataFrame(results, columns=columns)
                 st.dataframe(df)
 
-            elif option == "25.	List all artifacts from the 20th century belonging to Roman and American culture":
+            elif option == "25. List all artifacts from the 20th century belonging to Roman and American culture":
                 cursor.execute("SELECT * FROM artifacts_metadata WHERE century = '20th century' AND (culture = 'Roman' OR culture = 'American');")
                 results = cursor.fetchall()
                 columns = [i[0] for i in cursor.description]
                 df = pd.DataFrame(results, columns=columns)
+                st.dataframe(df)
+
+            else:
+                st.error("No query selected. Please choose a query from the dropdown.")
